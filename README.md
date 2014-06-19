@@ -42,6 +42,6 @@ If you need to filter, group or perform additional `Include`s when loading relat
 `LoadQuery` will not result in a database hit until the collection is enumerated (e.g., calling `Load`, `ToList`, etc.).
 
 ## Performance
-By default, *EntityLoaders* will check to see if a related entity is already loaded before hitting the database if you call `Load`. However, `LoadQuery` will perform a database hit no matter what.
+If you use `Load`, *EntityLoaders* will check to see if a related entity is already loaded before hitting the database. However, `LoadQuery` will perform a database hit no matter what.
 
 In the case of large entity sets (tens of thousands of entities), checking to see if an entity is already loaded can cause performce problems. In those cases, using `LoadQuery` can actually perform better.
