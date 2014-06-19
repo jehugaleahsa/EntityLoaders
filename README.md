@@ -23,7 +23,7 @@ In this example, `context` is your `DbContext` instance. The `GetLoader` extensi
 You can grab the orders related to multiple customers at once by passing a list of customers to the `GetLoader` method:
 
     context.GetLoader(customer1, customer2).Load(c => c.Orders);
-    context.GetLoader(new Customer[] { customer1, customer 2 }).Load(c => c.Orders);
+    context.GetLoader(new Customer[] { customer1, customer2 }).Load(c => c.Orders);
     context.GetLoader(customers).Load(c => c.Orders);
     
 If you need to filter, group or perform additional `Include`s when loading related entities, you can use the `LoadQuery` methods:
