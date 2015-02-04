@@ -26,10 +26,7 @@ namespace EntityLoaders
             {
                 throw new ArgumentNullException("entities");
             }
-            if (entities.Any(e => e == null))
-            {
-                throw new ArgumentException("Encountered a null entity.", "entities");
-            }
+            entities = entities.Where(e => e != null).ToArray();
 
             IObjectContextAdapter adapter = context;
             var objectContext = adapter.ObjectContext;
