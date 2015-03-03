@@ -70,6 +70,10 @@ namespace EntityLoaders
         public void Reload()
         {
             DbEntityEntry<TEntity> entry = context.Entry(entity);
+            if (!isPersisted(entry))
+            {
+                return;
+            }
             entry.Reload();
         }
 
@@ -77,6 +81,10 @@ namespace EntityLoaders
             where TRelation : class
         {
             DbEntityEntry<TEntity> entry = context.Entry(entity);
+            if (!isPersisted(entry))
+            {
+                return;
+            }
             DbReferenceEntry reference = entry.Reference(accessor);
             if (!reference.IsLoaded)
             {
@@ -88,6 +96,10 @@ namespace EntityLoaders
             where TRelation : class
         {
             DbEntityEntry<TEntity> entry = context.Entry(entity);
+            if (!isPersisted(entry))
+            {
+                return;
+            }
             DbCollectionEntry collection = entry.Collection(accessor);
             if (!collection.IsLoaded)
             {
@@ -99,6 +111,10 @@ namespace EntityLoaders
             where TRelation : class
         {
             DbEntityEntry<TEntity> entry = context.Entry(entity);
+            if (!isPersisted(entry))
+            {
+                return Enumerable.Empty<TRelation>().AsQueryable();
+            }
             DbReferenceEntry<TEntity, TRelation> reference = entry.Reference(accessor);
             return reference.Query();
         }
@@ -107,8 +123,22 @@ namespace EntityLoaders
             where TRelation : class
         {
             DbEntityEntry<TEntity> entry = context.Entry(entity);
+            if (!isPersisted(entry))
+            {
+                return Enumerable.Empty<TRelation>().AsQueryable();
+            }
             DbCollectionEntry<TEntity, TRelation> collection = entry.Collection(accessor);
             return collection.Query();
+        }
+
+        private static bool isPersisted(DbEntityEntry<TEntity> entry)
+        {
+            EntityState[] persistedStates = new EntityState[]
+            {
+                EntityState.Modified,
+                EntityState.Unchanged,
+            };
+            return persistedStates.Contains(entry.State);
         }
     }
 }

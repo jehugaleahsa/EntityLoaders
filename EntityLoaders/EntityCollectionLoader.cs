@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Core.Objects;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
@@ -121,11 +122,14 @@ namespace EntityLoaders
 
         private Expression<Func<TEntity, bool>> getFilterExpression(Func<TEntity, bool> isLoaded)
         {
-            var unloaded = entities;
+            // Remove any entities that are not persisted.
+            var unloaded = entities.Where(e => isPersisted(context.Entry(e)));
             if (isLoaded != null)
             {
-                unloaded = unloaded.Where(e => !isLoaded(e)).ToArray();
+                // Remove any entities whose navigation property is already loaded.
+                unloaded = unloaded.Where(e => !isLoaded(e));
             }
+            unloaded = unloaded.ToArray();
             if (!unloaded.Any())
             {
                 return null;
@@ -248,6 +252,16 @@ namespace EntityLoaders
             Expression constant = Expression.Constant(value);
             Expression equal = Expression.Equal(member, constant);
             return equal;
+        }
+
+        private static bool isPersisted(DbEntityEntry<TEntity> entry)
+        {
+            EntityState[] persistedStates = new EntityState[]
+            {
+                EntityState.Modified,
+                EntityState.Unchanged,
+            };
+            return persistedStates.Contains(entry.State);
         }
     }
 }
